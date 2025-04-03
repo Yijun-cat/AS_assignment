@@ -2,3 +2,7 @@
 # Group 40
 
 Development platform: MyCobot 280 pi
+
+## Project description
+
+See project proposal on google drive

@@ -1,5 +1,4 @@
 # API_KEY.py
-# 同济子豪兄 2024-5-22
 # 各种开放平台的KEY，不要外传
 
 # 通义千问QwenVL系列
@@ -12,7 +11,7 @@ Qwen_KEY = "f8144ffaff7c459791XXXXXXXXX"
 YI_KEY = "f8144ffaff7c459791XXXXXXXXX"
 
 
-# 百度智能云千帆ModelBuilder
+# baidu qianfan ModelBuilder
 # https://qianfan.cloud.baidu.com
 QIANFAN_ACCESS_KEY = "ALTAKRELRxSXXXXXXXXXX"
 QIANFAN_SECRET_KEY = "3737d9da82de4f2XXXXXXXXXX"

@@ -40,7 +40,7 @@ def record_auto(MIC_INDEX=1):
     FORMAT = pyaudio.paInt16
     CHANNELS = 1 if sys.platform == 'darwin' else 2 # 采样通道数
     
-    # 初始化录音
+    # initialize recording
     p = pyaudio.PyAudio()
     stream = p.open(format=FORMAT,
                     channels=CHANNELS,

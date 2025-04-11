@@ -1,6 +1,4 @@
 # utils_agent.py
-# 同济子豪兄 2024-5-23
-# Agent智能体相关函数
 
 from utils_llm import *
 

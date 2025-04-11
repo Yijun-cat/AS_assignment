@@ -1,15 +1,13 @@
 # utils_camera.py
-# 同济子豪兄 2024-5-22
-# 开启摄像头，调用摄像头实时画面，按q键退出
 
 import cv2
 import numpy as np
 
 def check_camera():
     '''
-    开启摄像头，调用摄像头实时画面，按q键退出
+    Turn on the camera, call the camera real-time picture, press the q to exit
     '''
-    print('开启摄像头')
+    print('Turn on the camera')
     cap = cv2.VideoCapture(0)
     
     while(True):

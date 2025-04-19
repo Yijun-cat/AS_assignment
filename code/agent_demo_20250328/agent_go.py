@@ -32,7 +32,7 @@ def agent_play():
     # 归零
     back_zero()
     
-    # print('测试摄像头')
+    # print('test camera')
     # check_camera()
     
     # 输入指令

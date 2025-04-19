@@ -1,8 +1,7 @@
-# utils_asr.py
-# 同济子豪兄 2024-5-22
-# 录音+语音识别
 
-print('导入录音+语音识别模块')
+# recording + speech recognition
+
+print('import recording + speech recognition module')
 
 import pyaudio
 import wave

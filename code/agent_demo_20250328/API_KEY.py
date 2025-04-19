@@ -1,5 +1,5 @@
 # API_KEY.py
-# 各种开放平台的KEY，不要外传
+# API keys from different open platforms
 
 # 通义千问QwenVL系列
 # https://bailian.console.aliyun.com/#/model-market

@@ -1,21 +1,23 @@
 # utils_led.py
-# 同济子豪兄 2024-5-22
-# 大模型控制LED灯颜色
+# Change LED color using LLM
 
 from utils_llm import llm_qianfan, llm_yi
 from utils_robot import mc
 
-print('导入LED灯控制模块')
+print('import LED control module')
 
-# 备选颜色
-# 贝加尔湖、中国红、大海、绿叶、金子、蓝宝石、小猪佩奇、墨绿色、黑色
+# Alternative colors
+# Lake Baikal, Chinese Red, Ocean Blue, Green Leaf, Gold, Sapphire Blue, Peppa Pig, Dark Green, Black
 
-# 系统提示词
-SYS_PROMPT = '我即将说的这句话中包含一个目标物体，帮我把这个物体的一种可能的颜色，以0-255的RGB像素值形式返回给我，整理成元组格式，例如(255, 30, 60)，直接回复元组本身，以括号开头，不要回复任何中文内容，下面是这句话：'
+# system prompt
+SYS_PROMPT = 'The following sentence contains a target object.'
+'Help me return one possible color of this object in the form of RGB pixel values (ranging from 0 to 255), formatted as a tuple, '
+'for example, (255, 30, 60). Reply with the tuple itself, starting with parentheses, '
+'and do not include any language content. Here is the sentence:'
 
-def llm_led(PROMPT_LED='帮我把LED灯的颜色改为贝加尔湖的颜色'):
+def llm_led(PROMPT_LED='Help me change the color of the LED light to the color of Lake Baikal'):
     '''
-    大模型控制LED灯颜色
+    Change LED color using LLM
     '''
     
     PROMPT = SYS_PROMPT + PROMPT_LED
@@ -23,19 +25,19 @@ def llm_led(PROMPT_LED='帮我把LED灯的颜色改为贝加尔湖的颜色'):
     n = 1
     while n < 5:
         try:
-            # 调用大模型API
+            # Call LLM API
             # response = llm_qianfan(PROMPT) 
             response = llm_yi(PROMPT) 
             
-            # 提取颜色
+            # Extrace color
             rgb_tuple = eval(response)
         
-            # 设置LED灯的RGB颜色
+            # Set RGB color
             mc.set_color(rgb_tuple[0], rgb_tuple[1], rgb_tuple[2])
-            print('LED灯颜色修改成功', rgb_tuple)
+            print('Changed LED color', rgb_tuple)
 
             break
             
         except Exception as e:
-            print('大模型返回json结构错误，再尝试一次', e)
+            print('The model returned an invalid JSON structure. Try again.', e)
             n += 1

@@ -10,7 +10,7 @@ import os
 import sys
 from API_KEY import *
 
-# 确定麦克风索引号
+# Confirm device number
 # import sounddevice as sd
 # print(sd.query_devices())
 

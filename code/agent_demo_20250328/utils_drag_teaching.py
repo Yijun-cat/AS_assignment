@@ -1,8 +1,7 @@
 # utils_drag_teaching.py
-# 同济子豪兄 2024-5-23
-# 拖动示教
+# drag teaching
 
-print('导入拖动示教模块')
+print('import drag-and-teach module')
 
 import time
 import os
@@ -15,7 +14,7 @@ import json
 from pymycobot.mycobot import MyCobot
 from pymycobot import PI_PORT, PI_BAUD
 
-# 连接机械臂
+# Connect arm
 mc = MyCobot(PI_PORT, PI_BAUD, debug=False)
 
 class Raw(object):
@@ -129,7 +128,6 @@ class TeachingTest(Helper):
     def print_menu(self):
         print(
             """\
-        \r 拖动示教 同济子豪兄
         \r q: 退出
         \r r: 开始录制动作
         \r c: 停止录制动作

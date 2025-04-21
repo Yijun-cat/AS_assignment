@@ -1,8 +1,5 @@
 # utils_tts.py
-# 同济子豪兄 2024-5-23
-# 语音合成
-
-print('导入语音合成模块')
+# speech synthesis
 
 import os
 import appbuilder
@@ -10,22 +7,24 @@ from API_KEY import *
 import pyaudio
 import wave
 
+print('Import speech sythesis module')
+
 tts_ab = appbuilder.TTS()
 
-def tts(TEXT='我是同济子豪兄的麒麟臂', tts_wav_path = 'temp/tts.wav'):
+def tts(TEXT="I am your steel paw of justice!", tts_wav_path = 'temp/tts.wav'):
     '''
-    语音合成TTS，生成wav音频文件
+    Speech synthesis using text-to-speech (TTS), generate a WAV audio file"
     '''
     inp = appbuilder.Message(content={"text": TEXT})
     out = tts_ab.run(inp, model="paddlespeech-tts", audio_type="wav")
     # out = tts_ab.run(inp, audio_type="wav")
     with open(tts_wav_path, "wb") as f:
         f.write(out.content["audio_binary"])
-    # print("TTS语音合成，导出wav音频文件至：{}".format(tts_wav_path))
+    # print("TTS speech systhesis，export wav audio file to：{}".format(tts_wav_path))
 
 def play_wav(wav_file='asset/welcome.wav'):
     '''
-    播放wav音频文件
+    play wav audio file
     '''
     prompt = 'aplay -t wav {} -q'.format(wav_file)
     os.system(prompt)

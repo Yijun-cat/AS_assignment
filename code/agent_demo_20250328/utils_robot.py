@@ -17,7 +17,7 @@ mc.set_fresh_mode(0)
 
 import RPi.GPIO as GPIO
 # Initialize GPIO
-GPIO.setwarnings(False)   # do not print warning info
+GPIO.setwarnings(False)   # do not print warning message
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(20, GPIO.OUT)
 GPIO.setup(21, GPIO.OUT)
@@ -77,7 +77,7 @@ def head_nod():
     mc.send_angles([0.87,(-50.44),47.28,0.35,(-0.43),(-0.26)],70)
 
 def move_to_coords(X=150, Y=-130, HEIGHT_SAFE=230):
-    print('Move to the specified coordinates：X {} Y {}'.format(X, Y))
+    print('Move to the specified coordinates: X {} Y {}'.format(X, Y))
     mc.send_coords([X, Y, HEIGHT_SAFE, 0, 180, 90], 20, 0)
     time.sleep(4)
 
@@ -94,7 +94,7 @@ def move_to_top_view():
 def top_view_shot(check=False):
     '''
     Take a picture and save
-    check：Is manual confirmation needed on the screen that the photo was taken successfully, and press the 'q' to continue?
+    check: Is manual confirmation needed on the screen that the photo was taken successfully, and press the 'q' to continue?
     '''
     print('Move to top view')
     move_to_top_view()
@@ -115,7 +115,7 @@ def top_view_shot(check=False):
     cv2.imshow('zihao_vlm', img_bgr) 
     
     if check:
-        print( "Plese confirm that the photo was taken successfully，press press 'c' to continue，'q' to quit" )
+        print( "Please confirm that the photo was taken successfully, press press 'c' to continue，'q' to quit" )
         while(True):
             key = cv2.waitKey(10) & 0xFF
             if key == ord('c'): # press c to continue
@@ -162,14 +162,14 @@ def eye2hand(X_im=160, Y_im=120):
 def pump_move(mc, XY_START=[230,-50], HEIGHT_START=90, XY_END=[100,220], HEIGHT_END=100, HEIGHT_SAFE=220):
 
     '''
-    用吸泵，将物体从起点吸取移动至终点
+    Use the suction pump to pick up the object from the starting point and move it to the endpoint.
 
-    mc：机械臂实例
-    XY_START：起点机械臂坐标
-    HEIGHT_START：起点高度，方块用90
-    XY_END：终点机械臂坐标
-    HEIGHT_END：终点高度
-    HEIGHT_SAFE：搬运途中安全高度
+    mc: robot arm use case
+    XY_START: starting coordinates robot arm
+    HEIGHT_START: starting height, 90 for a cube
+    XY_END: endpoint robot arm coordinates
+    HEIGHT_END: endpoint height
+    HEIGHT_SAFE: safty height during transport
     '''
     
     # Initialize GPIO
@@ -177,43 +177,43 @@ def pump_move(mc, XY_START=[230,-50], HEIGHT_START=90, XY_END=[100,220], HEIGHT_
     GPIO.setup(20, GPIO.OUT)
     GPIO.setup(21, GPIO.OUT)
 
-    # 设置运动模式为插补
+    # Set motion mode to interpolation
     mc.set_fresh_mode(0)
     
     # # Reset the robotic arm to zero position
-    # print('    Reset the robotic arm to zero position')
+    # print('   Reset the robotic arm to zero position')
     # mc.send_angles([0, 0, 0, 0, 0, 0], 40)
     # time.sleep(4)
     
-    # 吸泵移动至物体上方
-    print('    吸泵移动至物体上方')
+    # Move the suction pump above the object
+    print('    Move the suction pump above the object')
     mc.send_coords([XY_START[0], XY_START[1], HEIGHT_SAFE, 0, 180, 90], 20, 0)
     time.sleep(4)
 
-    # 开启吸泵
+    # Turn on the pump
     pump_on()
     
-    # 吸泵向下吸取物体
-    print('    吸泵向下吸取物体')
+    # Lower the suction pump to pick up the object
+    print('    Lower the suction pump to pick up the object')
     mc.send_coords([XY_START[0], XY_START[1], HEIGHT_START, 0, 180, 90], 15, 0)
     time.sleep(4)
 
-    # 升起物体
-    print('    升起物体')
+    # Lift the object
+    print('    Lift the object')
     mc.send_coords([XY_START[0], XY_START[1], HEIGHT_SAFE, 0, 180, 90], 15, 0)
     time.sleep(4)
 
-    # 搬运物体至目标上方
-    print('    搬运物体至目标上方')
+    # Move the object above the target
+    print('    Move the object above the target')
     mc.send_coords([XY_END[0], XY_END[1], HEIGHT_SAFE, 0, 180, 90], 15, 0)
     time.sleep(4)
 
-    # 向下放下物体
-    print('    向下放下物体')
+    # Place the object down
+    print('    Place the object down')
     mc.send_coords([XY_END[0], XY_END[1], HEIGHT_END, 0, 180, 90], 20, 0)
     time.sleep(3)
 
-    # 关闭吸泵
+    # Turn off the pump
     pump_off()
 
     # Reset the robotic arm to zero position

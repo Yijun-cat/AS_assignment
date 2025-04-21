@@ -16,28 +16,29 @@ from API_KEY import *
 
 def record(MIC_INDEX=0, DURATION=5):
     '''
-    调用麦克风录音，需用arecord -l命令获取麦克风ID
-    DURATION，录音时长
+    To use the microphone for recording, you need to obtain the microphone ID with the 'arecord -l' command.
+    DURATION: Recording duration
     '''
-    print('开始 {} 秒录音'.format(DURATION))
+    print('Start {} seconds recording'.format(DURATION))
     os.system('sudo arecord -D "plughw:{}" -f dat -c 1 -r 16000 -d {} temp/speech_record.wav'.format(MIC_INDEX, DURATION))
-    print('录音结束')
+    print('Recording ended')
 
 def record_auto(MIC_INDEX=1):
     '''
-    开启麦克风录音，保存至'temp/speech_record.wav'音频文件
-    音量超过阈值自动开始录音，低于阈值一段时间后自动停止录音
-    MIC_INDEX：麦克风设备索引号
+    Start microphone recording and save it to the 'temp/speech_record.wav' audio file
+    Recording automatically starts when the volume exceeds the threshold, and automatically stops after the volume stays below the threshold for a couple of seconds.
+    MIC_INDEX：microphone device number
     '''
     
-    CHUNK = 1024               # 采样宽度
-    RATE = 16000               # 采样率
+    CHUNK = 1024               # Sampling width
+    RATE = 16000               # Sampling rate
     
-    QUIET_DB = 2000            # 分贝阈值，大于则开始录音，否则结束
-    delay_time = 1             # 声音降至分贝阈值后，经过多长时间，自动终止录音
+    QUIET_DB = 2000            # Decibel threshold—start recording if above, stop if below
+
+    delay_time = 1             # After the sound drops to the decibel threshold, the duration before recording automatically stops
     
     FORMAT = pyaudio.paInt16
-    CHANNELS = 1 if sys.platform == 'darwin' else 2 # 采样通道数
+    CHANNELS = 1 if sys.platform == 'darwin' else 2 # Number of channels
     
     # initialize recording
     p = pyaudio.PyAudio()
@@ -49,68 +50,68 @@ def record_auto(MIC_INDEX=1):
                     input_device_index=MIC_INDEX
                    )
     
-    frames = []             # 所有音频帧
+    frames = []             # All audio frames
     
-    flag = False            # 是否已经开始录音
-    quiet_flag = False      # 当前音量小于阈值
+    flag = False            # Whether recording has started
+    quiet_flag = False      # Current volume is below the threshold
     
-    temp_time = 0           # 当前时间是第几帧
-    last_ok_time = 0        # 最后正常是第几帧
-    START_TIME = 0          # 开始录音是第几帧
-    END_TIME = 0            # 结束录音是第几帧
+    temp_time = 0           # Which frame is the current time
+    last_ok_time = 0        # Which frame was the last valid (normal) one
+    START_TIME = 0          # Which frame recording started at
+    END_TIME = 0            # Which frame recording ended at
     
     print('可以说话啦！')
     
     while True:
         
-        # 获取当前chunk的声音
+        # get sound of current chunk
         data = stream.read(CHUNK, exception_on_overflow=False)
         frames.append(data)
-        # 获取当前chunk的音量分贝值
+        # get sound level(dB) of current chunk
         temp_volume = np.max(np.frombuffer(data, dtype=np.short))
         
         if temp_volume > QUIET_DB and flag==False:
-            print("音量高于阈值，开始录音")
+            print("Volume is higher than threshold，start recording")
             flag =True
             START_TIME = temp_time
             last_ok_time = temp_time
     
-        if flag: # 录音中的各种情况
+        if flag: # Different scenarios during recording
     
             if(temp_volume < QUIET_DB and quiet_flag==False):
-                print("录音中，当前音量低于阈值")
+                print("Recording， current volume is lower than threshold")
                 quiet_flag = True
                 last_ok_time = temp_time
                 
             if(temp_volume > QUIET_DB):
-                # print('录音中，当前音量高于阈值，正常录音')
+                # print('recording，current volume higher than threshold，default recording')
                 quiet_flag = False
                 last_ok_time = temp_time
     
             if(temp_time > last_ok_time + delay_time*15 and quiet_flag==True):
-                print("音量低于阈值{:.2f}秒后，检测当前音量".format(delay_time))
+                print("Volume lower than threshold, after {:.2f} seconds，measure current volume".format(delay_time))
                 if(quiet_flag and temp_volume < QUIET_DB):
-                    print("当前音量仍然小于阈值，录音结束")
+                    print("Current volume still lower than threshold，end recording")
                     END_TIME = temp_time
                     break
                 else:
-                    print("当前音量重新高于阈值，继续录音中")
+                    print("Current volume higher than threshold again，continue recording")
                     quiet_flag = False
                     last_ok_time = temp_time
                     
-        # print('当前帧 {} 音量 {}'.format(temp_time+1, temp_volume))
+        # print('current frame {} volume {}'.format(temp_time+1, temp_volume))
         temp_time += 1
-        if temp_time > 150:  # 超时直接退出
+        if temp_time > 150:  # Timeout exit directly
             END_TIME = temp_time
-            print('超时，录音结束')
+            print('Timeout，end recording')
             break
     
-    # 停止录音
+    # stop recording
     stream.stop_stream()
     stream.close()
     p.terminate()
     
-    # 导出wav音频文件
+    # output wav audio file
     output_path = 'temp/speech_record.wav'
     wf = wave.open(output_path, 'wb')
     wf.setnchannels(CHANNELS)
@@ -118,32 +119,33 @@ def record_auto(MIC_INDEX=1):
     wf.setframerate(RATE)
     wf.writeframes(b''.join(frames[START_TIME-2:END_TIME]))
     wf.close()
-    print('保存录音文件', output_path)
+    print('save audio file', output_path)
 
 import appbuilder
-# 配置密钥
+
+# configure key
 os.environ["APPBUILDER_TOKEN"] = APPBUILDER_TOKEN
-asr = appbuilder.ASR() # 语音识别组件
+asr = appbuilder.ASR() # speech recognition module
 def speech_recognition(audio_path='temp/speech_record.wav'):
     '''
-    AppBuilder-SDK语音识别组件
+    AppBuilder-SDK speech recognition module
     '''
-    print('开始语音识别')
-    # 载入wav音频文件
+    print('Start speech recognition')
+    # Load wav audio file
     with wave.open(audio_path, 'rb') as wav_file:
         
-        # 获取音频文件的基本信息
+        # get basic information audio file
         num_channels = wav_file.getnchannels()
         sample_width = wav_file.getsampwidth()
         framerate = wav_file.getframerate()
         num_frames = wav_file.getnframes()
         
-        # 获取音频数据
+        # get audio data info
         frames = wav_file.readframes(num_frames)
         
-    # 向API发起请求
+    # send request to API
     content_data = {"audio_format": "wav", "raw_audio": frames, "rate": 16000}
     message = appbuilder.Message(content_data)
     speech_result = asr.run(message).content['result'][0]
-    print('语音识别结果：', speech_result)
+    print('Speech recognition result：', speech_result)
     return speech_result

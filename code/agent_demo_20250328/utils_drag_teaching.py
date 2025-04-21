@@ -11,11 +11,11 @@ import tty
 import threading
 import json
 
-from pymycobot.mycobot import MyCobot
+from pymycobot.mycobot280 import MyCobot280
 from pymycobot import PI_PORT, PI_BAUD
 
 # Connect arm
-mc = MyCobot(PI_PORT, PI_BAUD, debug=False)
+mc = MyCobot280(PI_PORT, PI_BAUD, debug=False)
 
 class Raw(object):
     """Set raw input mode for device"""
@@ -65,7 +65,7 @@ class TeachingTest(Helper):
                     time.sleep(0.1)
                     print("\r {}".format(time.time() - start_t), end="")
 
-        self.echo("开始录制动作")
+        self.echo("Start recording action")
         self.record_t = threading.Thread(target=_record, daemon=True)
         self.record_t.start()
 
@@ -73,15 +73,15 @@ class TeachingTest(Helper):
         if self.recording:
             self.recording = False
             self.record_t.join()
-            self.echo("停止录制动作")
+            self.echo("Stop recording action")
 
     def play(self):
-        self.echo("开始回放动作")
+        self.echo("Start action playback")
         for angles in self.record_list:
             # print(angles)
             self.mc.set_encoders(angles, 80)
             time.sleep(0.1)
-        self.echo("回放结束\n")
+        self.echo("End playback\n")
 
     def loop_play(self):
         self.playing = True
@@ -95,7 +95,7 @@ class TeachingTest(Helper):
                 self.mc.set_encoders(self.record_list[idx_], 80)
                 time.sleep(0.1)
 
-        self.echo("开始循环回放")
+        self.echo("Start loop playback")
         self.play_t = threading.Thread(target=_loop, daemon=True)
         self.play_t.start()
 
@@ -103,7 +103,7 @@ class TeachingTest(Helper):
         if self.playing:
             self.playing = False
             self.play_t.join()
-            self.echo("停止循环回放")
+            self.echo("Stop loop playback")
 
     def save_to_local(self):
         if not self.record_list:
@@ -113,7 +113,7 @@ class TeachingTest(Helper):
         save_path = os.path.dirname(__file__) + "/temp/record.txt"
         with open(save_path, "w") as f:
             json.dump(self.record_list, f, indent=2)
-            self.echo("回放动作导出至:  {}".format(save_path))
+            self.echo("Export playback action to:  {}".format(save_path))
 
     def load_from_local(self):
 
@@ -121,21 +121,21 @@ class TeachingTest(Helper):
             try:
                 data = json.load(f)
                 self.record_list = data
-                self.echo("载入本地动作数据成功")
+                self.echo("Successfully loaded local action data")
             except Exception:
                 self.echo("Error: invalid data.")
 
     def print_menu(self):
         print(
             """\
-        \r q: 退出
-        \r r: 开始录制动作
-        \r c: 停止录制动作
-        \r p: 回放动作
-        \r P: 循环回放/停止循环回放
-        \r s: 将录制的动作保存到本地
-        \r l: 从本地读取录制好的动作
-        \r f: 放松机械臂
+        \r q: quit
+        \r r: start recording action
+        \r c: cancel recording action
+        \r p: action playback
+        \r P: loop playback/stop loop playback
+        \r s: Save recorded actions locally
+        \r l: Load recorded actions from local storage
+        \r f: Relax the arm
         \r----------------------------------
             """
         )
@@ -172,13 +172,13 @@ class TeachingTest(Helper):
 
 def drag_teach():
     
-    print('机械臂归零')
+    print('Reset the robotic arm to zero position')
     mc.send_angles([0, 0, 0, 0, 0, 0], 40)
     time.sleep(3)
     
     recorder = TeachingTest(mc)
     recorder.start()
 
-    print('机械臂归零')
+    print('Reset the robotic arm to zero position')
     mc.send_angles([0, 0, 0, 0, 0, 0], 40)
     time.sleep(3)

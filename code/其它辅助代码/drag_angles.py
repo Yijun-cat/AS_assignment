@@ -1,40 +1,38 @@
 # drag_angles.py
-# Demo：拖动示教（实时获取角度）
+# Demo: drag teaching ( real-time angle )
 
-# 同济子豪兄 2024-5-13
-
-# 导入工具包
-from pymycobot.mycobot import MyCobot
+# import toolkits
+from pymycobot.mycobot280 import MyCobot280
 from pymycobot import PI_PORT, PI_BAUD
 import time
 
-# 连接机械臂
-mc = MyCobot(PI_PORT, PI_BAUD)
+# connect to the arm
+mc = MyCobot280(PI_PORT, PI_BAUD)
 
-# 机械臂归零
+# reset the arm to original position
 mc.send_angles([0, 0, 0, 0, 0, 0], 60)
 time.sleep(3)
 
-# 机械臂移动至桌面
+# move the robot arm to the table surface
 mc.send_angles([0, -90, 0, 0, 0, 0], 40)
 time.sleep(3)
 
-# 放松机械臂
+# release all servos
 mc.release_all_servos()
 time.sleep(1)
 
-# 实时获取坐标并打印
+# get real-time coordinates and print out
 start = time.time()
-while time.time()-start < 120: # 在一段时间内
+while time.time()-start < 120: # within a certain period of time
 
     try:
-        # 获取当前坐标
+        # get current coordinates
         angles = mc.get_angles()
         
-        # 解析出坐标值
+        # extract coordinate values
         A, B, C, D, E, F = angles[0], angles[1], angles[2], angles[3], angles[4], angles[5]
         
-        # 打印坐标值
+        # print coordinate values
         print('A{:7}  B{:7}  C{:7}  D{:7}  E{:7}  F{:7}'.format(A, B, C, D, E, F))
     except:
         pass

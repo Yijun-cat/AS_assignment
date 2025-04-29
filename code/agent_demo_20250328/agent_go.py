@@ -1,24 +1,22 @@
 # agent_go.py
-# 同济子豪兄 2024-5-27
-# 看懂“图像”、听懂“人话”、指哪打哪的机械臂
-# 机械臂+大模型+多模态+语音识别=具身智能体Agent
+# Robotic arm + large model + multimodality + speech recognition = embodied intelligent agent
 
-print('\n听得懂人话、看得懂图像、拎得清动作的具身智能机械臂！')
+print('\nAn embodied intelligent robotic arm that can understand human speech, interpret images, and recognize actions.')
 
-# 导入常用函数
-from utils_asr import *             # 录音+语音识别
-from utils_robot import *           # 连接机械臂
-from utils_llm import *             # 大语言模型API
-from utils_led import *             # 控制LED灯颜色
-from utils_camera import *          # 摄像头
-from utils_robot import *           # 机械臂运动
-from utils_pump import *            # GPIO、吸泵
-from utils_vlm_move import *        # 多模态大模型识别图像，吸泵吸取并移动物体
-from utils_drag_teaching import *   # 拖动示教
-from utils_agent import *           # 智能体Agent编排
-from utils_tts import *             # 语音合成模块
+# import common functions
+from utils_asr import *             # recording + speech recognition
+from utils_robot import *           # connect the robotic arm
+from utils_llm import *             # LLM API
+from utils_led import *             # Control LED color
+from utils_camera import *          # Camera
+from utils_robot import *           # Robotic arm motion
+from utils_pump import *            # GPIO, suction pump
+from utils_vlm_move import *        # multimodal model recognize the image, use the suction pump to pick up and move the objec
+from utils_drag_teaching import *   # Drag teaching
+from utils_agent import *           # Intelligent agent action arrangement
+from utils_tts import *             # speech synthesis
 
-# print('播放欢迎词')
+# print('play welcome message')
 pump_off()
 # back_zero()
 play_wav('asset/welcome.wav')
@@ -27,51 +25,53 @@ message=[]
 message.append({"role":"system","content":AGENT_SYS_PROMPT})
 def agent_play():
     '''
-    主函数，语音控制机械臂智能体编排动作
+    Main function, voice control action arragnement of agent
     '''
-    # 归零
+    # back to original position
     back_zero()
     
     # print('test camera')
     # check_camera()
     
-    # 输入指令
-    # 先回到原点，再把LED灯改为墨绿色，然后把绿色方块放在篮球上
-    start_record_ok = input('是否开启录音，输入数字录音指定时长，按k打字输入，按c输入默认指令\n')
+    # input command
+    # First return to the origin, then change the LED light to dark green, and finally place the green block on the basketball
+    start_record_ok = input(
+        "Start recording or not? Enter a number to specify the recording duration, press 'k' to type your input, or press 'c' to enter the default command.\n"
+        )
     if str.isnumeric(start_record_ok):
         DURATION = int(start_record_ok)
         record(DURATION=DURATION)   # speech recording
         order = speech_recognition() # speech recognition
     elif start_record_ok == 'k':
-        order = input('请输入指令')
+        order = input('Please enter a command')
     elif start_record_ok == 'c':
-        order = '先归零，再摇头，然后把绿色方块放在篮球上'
+        order = 'first return to the origin, then shake head, and lastly place the green block on the basketball'
     else:
-        print('无指令，退出')
+        print('No command, exit')
         # exit()
-        raise NameError('无指令，退出')
+        raise NameError('No command, exit')
     
-    # 智能体Agent编排动作
+    # Agent action arrangement
     message.append({"role": "user", "content": order})
     agent_plan_output = eval(agent_plan(message))
     
-    print('智能体编排动作如下\n', agent_plan_output)
-    # plan_ok = input('是否继续？按c继续，按q退出')
+    print('Motion arrangement of agent\n', agent_plan_output)
+    # plan_ok = input("Continue or not？ press 'c' continue, press 'q' to quit")
     plan_ok = 'c'
     if plan_ok == 'c':
-        response = agent_plan_output['response'] # 获取机器人想对我说的话
-        print('开始语音合成')
-        tts(response)                     # 语音合成，导出wav音频文件
-        play_wav('temp/tts.wav')          # 播放语音合成音频文件
+        response = agent_plan_output['response'] # Retrieve what the robot wants to say to me
+        print('Start speech synthesis')
+        tts(response)                     # Synthesize speech and export it as a WAV audio file
+        play_wav('temp/tts.wav')          # play the audio file of speech synthesis
         output_other=''
-        for each in agent_plan_output['function']: # 运行智能体规划编排的每个函数
-            print('开始执行动作', each)
+        for each in agent_plan_output['function']: # Execute each function of action arrangement
+            print('Start executing actions', each)
             ret=eval(each)
             if ret!=None:
                 output_other=ret
     elif plan_ok =='q':
         # exit()
-        raise NameError('按q退出')
+        raise NameError("Press 'q' to quit")
     agent_plan_output['response']+='.'+ output_other
     message.append({"role":"assistant","content":str(agent_plan_output)})
 

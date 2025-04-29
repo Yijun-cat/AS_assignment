@@ -7,7 +7,7 @@ from utils_vlm import *
 
 import time
 
-def vlm_move(PROMPT='Put the green block on Peppa Pig for me', input_way='keyboard'):
+def vlm_move(PROMPT='Put the green block on Peppa Pig', input_way='keyboard'):
     '''
     multimodal model recognize the image, and use the suction pump to pick up and move the object
     input_way: speech input, keyboard input

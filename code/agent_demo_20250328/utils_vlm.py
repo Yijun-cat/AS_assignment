@@ -21,7 +21,7 @@ I will provide a command for the robotic arm.
 Please extract the starting object and ending object from this command, locate the top-left and bottom-right pixel coordinates of these two objects in the image, and output the data in JSON format.
 
 e.g., If my instruction is: Place the red block on top of the house.
-你输出这样的格式：
+Please output in this format:
 {
  "start":"red block",
  "start_xyxy":[[102,505],[324,860]],
@@ -107,7 +107,7 @@ def yi_vision_api(PROMPT='Put the red block on the pen', img_path='temp/vl_now.j
 
 def QwenVL_api(PROMPT='Put the red block on the pen', img_path='temp/vl_now.jpg', vlm_option=0):
     '''
-    通义千问QwenVL视觉语言多模态大模型API，模型列表请见：https://help.aliyun.com/zh/model-studio/getting-started/models?spm=0.0.0.i3#9f8890ce29g5u
+    Tongyi Qianwen QwenVL Vision-Language Multimodal Large Model API, list of models: https://help.aliyun.com/zh/model-studio/getting-started/models?spm=0.0.0.i3#9f8890ce29g5u
     '''
     if vlm_option==0:
         SYSTEM_PROMPT=SYSTEM_PROMPT_CATCH
@@ -203,8 +203,8 @@ def post_processing_viz(result, img_path, check=False):
     # Draw the center point of the end object
     img_bgr = cv2.circle(img_bgr, [END_X_CENTER, END_Y_CENTER], 6, [255, 0, 0], thickness=-1)
     # write object name
-    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB) # BGR 转 RGB
-    img_pil = Image.fromarray(img_rgb) # array 转 pil
+    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB) # convert BGR to RGB
+    img_pil = Image.fromarray(img_rgb) # convert array to pil
     draw = ImageDraw.Draw(img_pil)
     # write starting object name
     draw.text((START_X_MIN, START_Y_MIN-32), START_NAME, font=font, fill=(255, 0, 0, 1)) # coordinates, name, font, rgb color

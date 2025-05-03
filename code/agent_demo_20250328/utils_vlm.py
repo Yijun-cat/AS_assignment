@@ -72,7 +72,7 @@ def yi_vision_api(PROMPT='Put the red block on the pen', img_path='temp/vl_now.j
     
     # Send a request to the large model
     completion = client.chat.completions.create(
-      model="yi-vision",
+      model="yi-vision-v2",
       messages=[
         {
           "role": "user",
